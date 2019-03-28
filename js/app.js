@@ -18,10 +18,10 @@ $(document).ready(function(){
 
 /* VARIABLES */
 //los dulces.
-var candy1 = "<div id='candy1' class='elemento'><img  class='candy' src='image/1.png'></img></div>";
-var candy2 = "<div id='candy2' class='elemento'><img  class='candy' src='image/2.png'></img></div>";
-var candy3 = "<div id='candy3' class='elemento'><img  class='candy' src='image/3.png'></img></div>";
-var candy4 = "<div id='candy4' class='elemento'><img  class='candy' src='image/4.png'></img></div>";
+var candy1 = "<div class='elemento'><img id='candy1' class='candy' src='image/1.png'></img></div>";
+var candy2 = "<div class='elemento'><img id='candy2' class='candy' src='image/2.png'></img></div>";
+var candy3 = "<div class='elemento'><img id='candy3' class='candy' src='image/3.png'></img></div>";
+var candy4 = "<div class='elemento'><img id='candy4' class='candy' src='image/4.png'></img></div>";
 //arreglo para almacenar los que seran eliminados.
 var candysEliminados = [];
 //puntuacion (score-text).
@@ -43,14 +43,14 @@ function matchGameColor2(){
 function iniciar() {
   //para llenar las columnas
   llenarColumnasAlInicio();
-  //para validar los movimientos de los candys
+
+  //para que los candy tengan movimiento.
   moverCandy();
 
   //para iniciar la cuenta regresiva
   $("#timer").startTimer({
     onComplete: function(){
       finalizar();
-      //console.log('Complete');
     },
     //allowPause: true
   });
@@ -88,6 +88,8 @@ function reiniciar() {
   //para vaciar y volver a llenar los elementos
   $(".elemento").remove();
   llenarColumnasAlInicio();
+  //para que los candy sean dragables.
+  moverCandy();
 
   //para reiniciar el Tiempo
   $("#timer").remove();
@@ -107,6 +109,8 @@ function finalizar() {
   //inabilitamos el boton reinicio
   $(".btn-reinicio").attr("disabled", "true");
   $(".btn-reinicio").css("filter", "grayscale(100%)");
+  //inabilitamos el ordenamiento
+  $(".candy").draggable("disable");
   //para ocultar el temporizador
   $(".time").hide();
   //ocultamos el tablero
@@ -126,17 +130,120 @@ function finalizar() {
   //console.log('e.e');
 }//funcion para finalizar el Juego
 
-//funcion para validar si los candys de la misma columnas son iguales
+//funcion realizar el movimiento de los candys.
 function moverCandy() {
-  $("div[class^='col']").sortable({
-    stop: function( event, ui ) {
-      //aqui va la validacion, eliminacion y reañadido de los candys
+  //para que los elementos sean propeables
+  $(".elemento").droppable({
+    acept: ".candy",
+    //metodo drop
+    drop: function(event, ui) {
+      //para optener el id del candy que ya esta en el elemento
+      var thisCandyID = $(this).find("img").attr("id");
+      //para optener el id del nuevo candy y añadirlo
+      var idDragg = $(ui.draggable).attr("id");
+
+      //para añadir viejo al elemento del candy draggeado
+      switch (thisCandyID) {
+        case "candy1":{
+          $(ui.draggable).parent().html("<img id='candy1' class='candy' src='image/1.png'>");
+          break;
+        }
+        case "candy2":{
+          $(ui.draggable).parent().html("<img id='candy2' class='candy' src='image/2.png'>");
+          break;
+        }
+        case "candy3":{
+          $(ui.draggable).parent().html("<img id='candy3' class='candy' src='image/3.png'>");
+          break;
+        }
+        case "candy4":{
+          $(ui.draggable).parent().html("<img id='candy4' class='candy' src='image/4.png'>");
+          break;
+        }
+        default:{
+          //
+        }
+      }
+      //para añdir el candy nuevo al elemento.
+      switch (idDragg) {
+        case "candy1":{
+          $(this).html("<img id='candy1' class='candy' src='image/1.png'>");
+          break;
+        }
+        case "candy2":{
+          $(this).html("<img id='candy2' class='candy' src='image/2.png'>");
+          break;
+        }
+        case "candy3":{
+          $(this).html("<img id='candy3' class='candy' src='image/3.png'>");
+          break;
+        }
+        case "candy4":{
+          $(this).html("<img id='candy4' class='candy' src='image/4.png'>");
+          break;
+        }
+        default:{
+          //
+        }
+      }
+
+      //para que los candy sean draggable.
+      $(".candy").draggable({
+        start: function () {
+          //aqui creamos los contenedores para limitar el candy.
+          var pos = $(this).parent().offset();
+          $(".limitacion").css("border", "5px solid orange");
+          $(".limitacion").offset({
+            top: (pos.top-100),
+            left: (pos.left-100)
+          });
+        },
+        revert: true,
+        containment: ".limitacion",
+        stop: function () {
+          //aqui ponemos invisible el contenedor.
+          $(".limitacion").css("border", "none");
+          $(".limitacion").offset({
+            top: 10,
+            left: 1100
+          });
+        },
+        snap: true,
+        snapMode: "inner"
+      });//fin para que los candy sean draggable.
+
+      //aqui va la validacion de los candys
       contadorMovimientos++;
       $("#movimientos-text").text(contadorMovimientos);
       validarCandys();
-    }
+    }//fin del metodo drop
   });
-}//fin de la funcion para validar si los candys de la misma columnas son iguales
+
+  //para que los candy sean draggable.
+  $(".candy").draggable({
+    start: function () {
+      //aqui creamos los contenedores para limitar el candy.
+      var pos = $(this).parent().offset();
+      $(".limitacion").css("border", "5px solid orange");
+      $(".limitacion").offset({
+        top: (pos.top-100),
+        left: (pos.left-100)
+      });
+    },
+    revert: true,
+    containment: ".limitacion",
+    stop: function () {
+      //aqui ponemos invisible el contenedor.
+      $(".limitacion").css("border", "none");
+      $(".limitacion").offset({
+        top: 10,
+        left: 1100
+      });
+    },
+    snap: true,
+    snapMode: "inner"
+  });//fin para que los candy sean draggable.
+}//Fin de la funcion realizar el movimiento de los candys.
 
 //funcion para eliminar los dulces que coinciden
 function eliminarCandy() {
@@ -183,11 +290,12 @@ function añadirCandys() {
     añadirCandyCol(".col-7");
 
     //habilitamos el boton reinicio
+    console.log(eliminadosFi.length+", "+eliminadosCol.length);
     if((eliminadosFi.length == 0)&&(eliminadosCol.length == 0)){
       $(".btn-reinicio").attr("disabled", false);
       $(".btn-reinicio").css("filter", "none");
-      //inabilitamos el ordenamiento
-      $("div[class^='col']").sortable("enable");
+      //habilitamos el ordenamiento
+      $(".candy").draggable("enable");
     }
     //validamos los nuevos candys
     validarCandys();
@@ -221,6 +329,8 @@ function añadirCandyCol(id) {
         }
       }
     }
+    //para que los candy sean dragables.
+    moverCandy();
   }
 }//funcion para añadir candys a las columnas
 
@@ -235,6 +345,7 @@ function validarCandys() {
   validarFila(4);
   validarFila(5);
   validarFila(6);
+  eliminadosFi = [];
 
   //validamos las columnas
   validarColumna(".col-1");
@@ -244,6 +355,7 @@ function validarCandys() {
   validarColumna(".col-5");
   validarColumna(".col-6");
   validarColumna(".col-7");
+  eliminadosCol = [];
 
   //eliminamos los candys seleccionados
   eliminarCandy();
@@ -253,9 +365,9 @@ function validarCandys() {
 var eliminadosFi = [];
 function validarFila(id) {
   var arr = [
-    $(".col-1").find(".elemento")[id], $(".col-2").find(".elemento")[id], $(".col-3").find(".elemento")[id],
-    $(".col-4").find(".elemento")[id], $(".col-5").find(".elemento")[id], $(".col-6").find(".elemento")[id],
-    $(".col-7").find(".elemento")[id]
+    $(".col-1").find(".candy")[id], $(".col-2").find(".candy")[id], $(".col-3").find(".candy")[id],
+    $(".col-4").find(".candy")[id], $(".col-5").find(".candy")[id], $(".col-6").find(".candy")[id],
+    $(".col-7").find(".candy")[id]
   ];
 
   var el1 = $(arr[0]).attr("id");
@@ -336,14 +448,15 @@ function validarFila(id) {
     //inabilitamos el boton reinicio
     $(".btn-reinicio").attr("disabled", "true");
     $(".btn-reinicio").css("filter", "grayscale(100%)");
+
     //inabilitamos el ordenamiento
-    $("div[class^='col']").sortable("disable");
+    $(".candy").draggable("disable");
   }
 }//fin de la funcion para validar la fila
 //funcion para validar la columna
 var eliminadosCol = [];
 function validarColumna(id){
-  var arr = $(id).find(".elemento");
+  var arr = $(id).find(".candy");
   var el1 = $(arr[0]).attr("id");
   var el2 = $(arr[1]).attr("id");
   var el3 = $(arr[2]).attr("id");
@@ -424,8 +537,9 @@ function validarColumna(id){
     //inabilitamos el boton reinicio
     $(".btn-reinicio").attr("disabled", "true");
     $(".btn-reinicio").css("filter", "grayscale(100%)");
+
     //inabilitamos el ordenamiento
-    $("div[class^='col']").sortable("disable");
+    $(".candy").draggable("disable");
   }
 }//fin de la funcion para validar la columnna
 //fin de la funcion para validar si hay dulces que coinciden
@@ -440,12 +554,32 @@ function llenarColumnasAlInicio() {
   llenarColumnaAlInicio(".col-6");
   llenarColumnaAlInicio(".col-7");
 
-  $("div[class^='col']").sortable({
-    containment: "parent",
-    axis: "y",
-    distance: 50
-  });
+  //para que los candy sean draggable.
+  $(".candy").draggable({
+    start: function () {
+      //aqui creamos los contenedores para limitar el candy.
+      var pos = $(this).parent().offset();
+      $(".limitacion").css("border", "5px solid orange");
+      $(".limitacion").offset({
+        top: (pos.top-100),
+        left: (pos.left-100)
+      });
+    },
+    revert: true,
+    containment: ".limitacion",
+    stop: function () {
+      //aqui ponemos invisible el contenedor.
+      $(".limitacion").css("border", "none");
+      $(".limitacion").offset({
+        top: 10,
+        left: 1100
+      });
+    },
+    snap: true,
+    snapMode: "inner"
+  });//fin para que los candy sean draggable.
 }//fin de la funcion para llenar las columnas
+
 //funcion para llenar una columna
 function llenarColumnaAlInicio(id) {
   for(var i=0; i<7; i++){

@@ -44,7 +44,6 @@ body{
   justify-content: space-between;
 }
 
-
 .score, .moves, .time{
   text-align: center;
   height: 23%;
@@ -53,7 +52,6 @@ body{
   border-radius: 5px;
   background: rgba(232, 115, 6, 0.5);
 }
-
 
 .buttons{
   height: 10%;
@@ -66,7 +64,6 @@ body{
   font-family: gameFont;
   color: #E8CA06;
 }
-
 
 .titulo-over{
   font-family: gameFont;
@@ -100,15 +97,22 @@ div[class^='col']{
   align-items: center;
 }
 
-
 .elemento{
   width: 99.4px;
   height: 96px;
+  border: 1px solid;
 }
 
 .candy{
-  width: 98%;
+  width: 95%;
   height: auto;
+}
+
+.limitacion{
+  position: absolute;
+  width: 290px;
+  height: 290px;
+  opacity: 0.5;
 }
 
 .eliminados{
